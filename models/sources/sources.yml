@@ -1,0 +1,12 @@
+version: 2
+
+sources:
+  - name: sleekmart_raw
+    database: SLEEKMART_OMS
+    schema: RAW
+
+    tables:
+      - name: LOAD_CATEGORIES_TRADERS_SOUTH
+      - name: LOAD_CATEGORIES_TRADERS_NORTH
+      - name: LOAD_REGION_TRADERS_SOUTH
+      - name: LOAD_REGION_TRADERS_NORTH
