@@ -1,9 +1,10 @@
-{{ config(
-    materialized='incremental',
-    incremental_strategy='append'
-) }}
+{{
+    config(
+        materialized='incremental'
+    )
+}}
 
-WITH south_territories AS (
+WITH south_rows AS (
 
     SELECT DISTINCT
         hk_h_territory,
@@ -14,82 +15,62 @@ WITH south_territories AS (
 
 ),
 
-north_territories AS (
+north_rows AS (
 
     SELECT DISTINCT
-        hk_h_territory,
-        territory_id,
-        dss_record_source,
-        dss_load_date
-    FROM {{ ref('stage_territory_traders_north') }}
-
-),
-
-south_new_territories AS (
-
-    SELECT
-        hk_h_territory,
-        territory_id,
-        dss_record_source,
-        dss_load_date
-    FROM south_territories
-
-    {% if is_incremental() %}
-
-    WHERE NOT EXISTS (
-        SELECT 1
-        FROM {{ this }} h_territory
-        WHERE south_territories.territory_id = h_territory.territory_id
-    )
-
-    {% endif %}
-
-),
-
-north_new_territories AS (
-
-    SELECT
         north.hk_h_territory,
         north.territory_id,
         north.dss_record_source,
         north.dss_load_date
-
-    FROM north_territories north
+    FROM {{ ref('stage_territory_traders_north') }} north
 
     WHERE NOT EXISTS (
+
         SELECT 1
-        FROM south_territories south
+        FROM south_rows south
         WHERE north.territory_id = south.territory_id
+
     )
 
-    {% if is_incremental() %}
+),
 
-    AND NOT EXISTS (
-        SELECT 1
-        FROM {{ this }} h_territory
-        WHERE north.territory_id = h_territory.territory_id
-    )
+combined_rows AS (
 
-    {% endif %}
+    SELECT
+        hk_h_territory,
+        territory_id,
+        dss_record_source,
+        dss_load_date
+    FROM south_rows
+
+    UNION ALL
+
+    SELECT
+        hk_h_territory,
+        territory_id,
+        dss_record_source,
+        dss_load_date
+    FROM north_rows
 
 )
 
 SELECT
-    hk_h_territory,
-    territory_id,
-    dss_record_source,
-    dss_load_date,
+    combined_rows.hk_h_territory,
+    combined_rows.territory_id,
+    combined_rows.dss_record_source,
+    combined_rows.dss_load_date,
     CURRENT_TIMESTAMP() AS dss_create_time
 
-FROM south_new_territories
+FROM combined_rows
 
-UNION ALL
+{% if is_incremental() %}
 
-SELECT
-    hk_h_territory,
-    territory_id,
-    dss_record_source,
-    dss_load_date,
-    CURRENT_TIMESTAMP() AS dss_create_time
+WHERE NOT EXISTS (
 
-FROM north_new_territories
+    SELECT 1
+    FROM {{ this }} h_territory
+    WHERE combined_rows.territory_id = h_territory.territory_id
+
+)
+
+{% endif %}
