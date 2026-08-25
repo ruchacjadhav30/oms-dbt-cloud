@@ -27,3 +27,9 @@ models:
 
     data_vault:
       +materialized: table
+
+      stages:
+        +database: dv_stages
+        +schema: stages
+        +materialized: table
+
