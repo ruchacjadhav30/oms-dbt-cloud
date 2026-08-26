@@ -33,3 +33,10 @@ models:
         +schema: stages
         +materialized: table
 
+    dimensional_modelling:
+      +database: DIMENSIONAL_MODELLING
+      +schema: DM_SCHEMA
+      +materialized: table
+
+
+

@@ -25,3 +25,10 @@ sources:
       - name: LOAD_CUSTOMERS_TRADERS_SOUTH
       - name: LOAD_CUSTOMERS_TRADERS_NORTH
       - name: LOAD_COUNTRYCODES_FILE_SOURCES
+
+  - name: dimensional_raw
+    database: DIMENSIONAL_MODELLING
+    schema: RAW
+
+    tables:
+      - name: LOAD_CURRENCY_RATE
