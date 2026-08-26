@@ -32,3 +32,11 @@ sources:
 
     tables:
       - name: LOAD_CURRENCY_RATE
+      - name: LOAD_PRODUCT
+      - name: LOAD_PRODUCT_LINE
+      - name: LOAD_PRODUCT_GROUP
+      - name: LOAD_PRODUCT_SUB_GROUP
+      - name: LOAD_PRODUCT_SALES2
+      - name: LOAD_PRODUCT_LINE_SALES2
+      - name: LOAD_PRODUCT_GROUP_SALES2
+      - name: LOAD_PRODUCT_SUB_GROUP_SALES2
